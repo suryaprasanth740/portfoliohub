@@ -1,0 +1,69 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Public portfolio profiles.
+    // - Anyone can read a PUBLISHED profile (the public pages query with
+    //   where('published', '==', true), which this rule can verify).
+    // - The owner can always read their own profile, so they can preview it.
+    // - Drafts are private: nobody else can read an unpublished profile.
+    match /profiles/{uid} {
+      allow read: if (signedIn() && request.auth.uid == uid) ||
+        resource.data.published == true;
+      allow create, update: if signedIn() && request.auth.uid == uid;
+      allow delete: if false;
+    }
+
+    // Username registry: one doc per username, holding the owner's uid.
+    // Lets the app check "is this username taken?" without making every
+    // profile publicly readable.
+    match /usernames/{name} {
+      allow read: if true;
+      allow create: if signedIn() &&
+        request.resource.data.uid == request.auth.uid &&
+        name.matches('^[a-z0-9-]{3,30}$');
+      allow delete: if signedIn() && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+
+    // Projects are public portfolio content; only the author can change them.
+    match /projects/{id} {
+      allow read: if true;
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
+    }
+
+    match /posts/{id} {
+      allow read: if (signedIn() && resource.data.authorId == request.auth.uid) ||
+        resource.data.status == 'published';
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if signedIn() && resource.data.authorId == request.auth.uid;
+    }
+
+    // Contact messages: anyone can send one (public contact form), with
+    // size limits. Only the recipient (toUid) can read or manage them.
+    match /messages/{id} {
+      allow create: if request.resource.data.toUid is string &&
+        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 80 &&
+        request.resource.data.email is string && request.resource.data.email.size() <= 120 &&
+        request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() <= 2000 &&
+        request.resource.data.read == false;
+      allow read, delete: if signedIn() && resource.data.toUid == request.auth.uid;
+      allow update: if signedIn() && resource.data.toUid == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'updatedAt']);
+    }
+
+    // Analytics events: anyone can log a view; only the portfolio owner
+    // (ownerUid) can read their own events.
+    match /analytics_events/{id} {
+      allow create: if request.resource.data.ownerUid is string;
+      allow read: if signedIn() && resource.data.ownerUid == request.auth.uid;
+      allow update, delete: if false;
+    }
+  }
+}
