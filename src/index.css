@@ -1,0 +1,175 @@
+@import url('highlight.js/styles/github-dark.css');
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'Fraunces', ui-serif, Georgia, serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+::selection {
+  background: #6366f1;
+  color: white;
+}
+
+/* --- Markdown / blog post body typography --- */
+.ph-prose {
+  color: var(--ph-text, inherit);
+  line-height: 1.75;
+}
+.ph-prose h1,
+.ph-prose h2,
+.ph-prose h3,
+.ph-prose h4 {
+  font-weight: 700;
+  scroll-margin-top: 5.5rem;
+  line-height: 1.3;
+}
+.ph-prose h2 {
+  font-size: 1.5rem;
+  margin-top: 2.25rem;
+  margin-bottom: 0.75rem;
+}
+.ph-prose h3 {
+  font-size: 1.2rem;
+  margin-top: 1.75rem;
+  margin-bottom: 0.5rem;
+}
+.ph-prose p {
+  margin: 0.9rem 0;
+}
+.ph-prose a {
+  color: var(--ph-primary, #6366f1);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.ph-prose ul,
+.ph-prose ol {
+  margin: 0.9rem 0;
+  padding-left: 1.5rem;
+}
+.ph-prose li {
+  margin: 0.35rem 0;
+}
+.ph-prose ul {
+  list-style: disc;
+}
+.ph-prose ol {
+  list-style: decimal;
+}
+.ph-prose blockquote {
+  border-left: 3px solid var(--ph-primary, #6366f1);
+  padding: 0.25rem 1rem;
+  margin: 1.25rem 0;
+  color: var(--ph-muted, #64748b);
+  font-style: italic;
+}
+.ph-prose img {
+  border-radius: 0.75rem;
+  margin: 1.25rem 0;
+}
+.ph-prose pre {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.25rem 0;
+  font-size: 0.875rem;
+}
+.ph-prose :not(pre) > code {
+  background: var(--ph-surface-alt, #f1f5f9);
+  border-radius: 0.35rem;
+  padding: 0.15rem 0.4rem;
+  font-size: 0.875em;
+}
+.ph-prose hr {
+  border: none;
+  border-top: 1px solid var(--ph-border, #e2e8f0);
+  margin: 2rem 0;
+}
+.ph-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.9rem;
+}
+.ph-prose th,
+.ph-prose td {
+  border: 1px solid var(--ph-border, #e2e8f0);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.ph-fade-in {
+  animation: ph-fade-in 0.3s ease both;
+}
+@keyframes ph-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Marketing homepage background treatment --- */
+.ph-landing-bg {
+  position: relative;
+  isolation: isolate;
+}
+.ph-landing-bg::before,
+.ph-landing-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.ph-landing-bg::before {
+  background:
+    radial-gradient(680px circle at 14% 0%, rgba(99, 102, 241, 0.16), transparent 60%),
+    radial-gradient(560px circle at 100% 18%, rgba(34, 211, 238, 0.14), transparent 62%),
+    radial-gradient(720px circle at 46% 62%, rgba(236, 72, 153, 0.08), transparent 65%);
+}
+.ph-landing-bg::after {
+  background-image: radial-gradient(rgba(51, 65, 133, 0.35) 1px, transparent 1px);
+  background-size: 24px 24px;
+  opacity: 0.3;
+  mask-image: radial-gradient(900px circle at 50% 0%, #000 0%, transparent 78%);
+}
+
+.ph-blob {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(6px);
+  opacity: 0.5;
+  animation: ph-blob-drift 16s ease-in-out infinite;
+}
+@keyframes ph-blob-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(16px, -12px) scale(1.06);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ph-blob {
+    animation: none;
+  }
+}
